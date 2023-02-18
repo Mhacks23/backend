@@ -17,7 +17,6 @@ from pathlib import Path
 def get_transcription(video_url):
     streams = YouTube(video_url).streams
     title = streams[0].title
-    print(title)
     audio_file = streams.filter(only_audio=True).first().download(filename=r"audio.mp4")
     # print(audio_file)
     # audio_file = Path(audio_file)
@@ -27,8 +26,6 @@ def get_transcription(video_url):
 
     df = pd.DataFrame(transcription['segments'], columns=['start', 'end', 'text'])
     # print(df)
-
-    print(transcription['text'])
 
     return [transcription,title]
 
