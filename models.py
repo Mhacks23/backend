@@ -21,6 +21,11 @@ class TranscriptionModel(BaseModel):
             }
         }
 
+class OCRToNotesModel(BaseModel):
+    chapter_name: str = Field(...)
+    subject_name: str = Field(...)
+    user_id: str = Field(...)
+    text: str = Field(...)
 
 class userDataModel(BaseModel):
     user_id: str = Field(...)
@@ -32,6 +37,17 @@ class userDataModel(BaseModel):
         }
 
 
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "chapter_name": "Introduction to Python",
+                "subject_name": "Python",
+                "user_id": "5f9f5b5b5b5b5b5b5b5b5b5b",
+                "video_url": "https://www.youtube.com/watch?v=rfscVS0vtbw",
+
+            }
+        }
 
 def ResponseModel(data, message):
     return {
