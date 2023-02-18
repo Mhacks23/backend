@@ -22,6 +22,16 @@ class TranscriptionModel(BaseModel):
         }
 
 
+class userDataModel(BaseModel):
+    user_id: str = Field(...)
+    class Config:
+        schema_extra = {
+            "example": {
+                "user_id": "sdgsdfsdfsdf1213524"
+            }
+        }
+
+
 
 def ResponseModel(data, message):
     return {
