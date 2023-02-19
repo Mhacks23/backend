@@ -1,10 +1,26 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Body
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import json
 import motor.motor_asyncio
 from utilities import get_transcription,get_chunks,get_summary, get_recommendations
 from models import *
 
 app = FastAPI()
+
+origins = [
+    "*",
+    "http://localhost",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 MONGO_DETAILS = "mongodb+srv://admin:12345@cluster0.crod9kz.mongodb.net/?retryWrites=true&w=majority"
 
@@ -13,14 +29,18 @@ database = client.hackathon
 Transcriptions = database.get_collection("Transcriptions")
 
 
+
 @app.get('/')
 def index():
     return {'message':"Hello World"}
 
 
-@app.post('/get_transcription')
-async def get_transcription(transcript: TranscriptionModel ):
+@app.post('/create')
+async def create(transcript: TranscriptionModel ):
     try:
+        print(transcript.video_url)
+        # transcript = json.loads(transcript)
+        print(transcript)
         video_url = transcript.video_url
         user_id = str(transcript.user_id)
         chapter_name = str(transcript.chapter_name)
@@ -41,8 +61,9 @@ async def get_transcription(transcript: TranscriptionModel ):
         await Transcriptions.insert_one(obj)
         obj['_id'] = str(obj['_id']) 
         return obj
-    
+
     except Exception as e:
+        print("Error ", str(e))
         return {'message': 'Server Error : ' + str(e)}
 
 @app.post("/ocr_to_notes")
