@@ -11,6 +11,11 @@ import pywhisper
 import pandas as pd
 from transformers import pipeline
 from pathlib import Path
+import requests
+import bs4
+import os
+import shutil
+from PIL import Image
 # Get the transcription of the video
 
 
@@ -152,3 +157,26 @@ def get_recommendations(merged):
         videos.append(new_obj)
 
   return videos
+
+
+def get_article_text(url):
+  article_URL = url
+
+  response = requests.get(article_URL)
+  soup = bs4.BeautifulSoup(response.text, 'html.parser')
+
+  paragraphs = soup.find_all(['li', 'p', 'strong', 'em', 'h1'])
+
+  title = soup.find(['title']).get_text()
+  tag_list = []
+  for p in paragraphs:
+        if not p.href:
+            if len(p.get_text()) > 5:
+                tag_list.append(p)
+  res = title
+  for i in range(len(tag_list)):
+      text = tag_list[i].get_text()
+      res = res+ " " +text
+
+  return res
+

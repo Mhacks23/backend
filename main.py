@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import json
 import motor.motor_asyncio
-from utilities import get_transcription,get_chunks,get_summary, get_recommendations
+from utilities import *
 from models import *
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 
