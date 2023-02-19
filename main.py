@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import json
 import motor.motor_asyncio
-from utilities import get_transcription,get_chunks,get_summary, get_recommendations
+from utilities import *
 from models import *
 
 app = FastAPI()
@@ -114,3 +114,12 @@ async def get_recommended_videos(data: userDataModel):
     except Exception as e:
         return {'message': 'Server Error : ' + str(e)}
 
+@app.get('/get_article')
+async def get_article(article: LinkModel):
+    try:
+        url = article.link
+        text = get_article_text(url)
+        return {"article":text}
+    
+    except Exception as e:
+        return {'message': 'Server Error : ' + str(e)}

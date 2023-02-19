@@ -3,6 +3,9 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
+class LinkModel(BaseModel):
+    link: str = Field(...)
+    
 class TranscriptionModel(BaseModel):
     chapter_name: str = Field(...)
     subject_name: str = Field(...)
