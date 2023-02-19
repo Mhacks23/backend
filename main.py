@@ -171,9 +171,9 @@ async def registerUser(data : UserModel):
                 'email': data.email,
                 'message': 'User Created Successfully'
             }, 200
-        return {'message': 'User Alredy Exist'}, 401
+        return {'message': 'User Alredy Exist'}
     except Exception as e:
-        return {'message': 'Server Error : ' + str(e)}, 500
+        return {'message': 'Server Error : ' + str(e)}
 
 @app.post('/login')
 async def loginUser(data : LoginModel):
@@ -189,7 +189,18 @@ async def loginUser(data : LoginModel):
                 'user_id': str(obj['_id']),
                 'user_name': obj['name'],
                 'mobile': obj['mobile']
-            }, 200
-        return {"message": 'Invalid credentials'}, 401
+            }
+        return {"message": 'Invalid credentials'}
     except Exception as e:
-        return {'message': 'Server Error' + str(e)}, 500
+        return {'message': 'Server Error' + str(e)}
+    
+
+@app.get('/get_article')
+async def get_article(article: LinkModel):
+    try:
+        url = article.link
+        text = get_article_text(url)
+        return {"article":text}
+    
+    except Exception as e:
+        return {'message': 'Server Error : ' + str(e)}
