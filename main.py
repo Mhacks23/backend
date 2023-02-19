@@ -5,6 +5,7 @@ import json
 import motor.motor_asyncio
 from utilities import get_transcription,get_chunks,get_summary, get_recommendations
 from models import *
+from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 
 app = FastAPI()
 
@@ -27,8 +28,30 @@ MONGO_DETAILS = "mongodb+srv://admin:12345@cluster0.crod9kz.mongodb.net/?retryWr
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 database = client.hackathon
 Transcriptions = database.get_collection("Transcriptions")
+Users = database.get_collection("Users")
+
+#mail config
+conf = ConnectionConfig(
+    MAIL_USERNAME = "studypatt@gmail.com",
+    MAIL_PASSWORD = "sxzhjylmlgmcbkyq",
+    MAIL_FROM = "studypatt@gmail.com",
+    MAIL_PORT = 587,
+    MAIL_SERVER = "smtp.gmail.com",
+    MAIL_STARTTLS = True,
+    MAIL_SSL_TLS = False
+)
 
 
+
+async def send_mail(subject,email,body):
+    fm = FastMail(conf)
+    message = MessageSchema(
+        subject=subject,
+        recipients=email,
+        body=body,
+        subtype="html"
+    )
+    await fm.send_message(message)
 
 @app.get('/')
 def index():
@@ -64,6 +87,20 @@ async def create(transcript: TranscriptionModel ):
 
     except Exception as e:
         print("Error ", str(e))
+        return {'message': 'Server Error : ' + str(e)}
+
+
+@app.get("/gettranscripts/{user_id}")
+async def get_transcripts(user_id: str):
+    try:
+        print(user_id)
+        obj = Transcriptions.find({'user_id': user_id})
+        obj = await obj.to_list(length=100)
+        print(obj)
+        for i in range(len(obj)):
+            obj[i]['_id'] = str(obj[i]['_id'])
+        return obj
+    except Exception as e:
         return {'message': 'Server Error : ' + str(e)}
 
 @app.post("/ocr_to_notes")
@@ -114,3 +151,45 @@ async def get_recommended_videos(data: userDataModel):
     except Exception as e:
         return {'message': 'Server Error : ' + str(e)}
 
+
+
+@app.post('/register')
+async def registerUser(data : UserModel):
+    try:
+        print(data)
+        obj = await Users.find_one({'email': data.email})
+        if obj is None:
+            obj = {
+                'email': data.email,
+                'password': data.password,
+                'name': data.name,
+                'mobile': data.mobile,
+            }
+            await Users.insert_one(obj)
+            await send_mail("Sign Up Confirmation | StudyPat!", [data.email], "Greetings from StudyPat! \n\n Your Account has been successfully registered to StudyPat!")
+            return {
+                'email': data.email,
+                'message': 'User Created Successfully'
+            }, 200
+        return {'message': 'User Alredy Exist'}, 401
+    except Exception as e:
+        return {'message': 'Server Error : ' + str(e)}, 500
+
+@app.post('/login')
+async def loginUser(data : LoginModel):
+    try:
+        obj = await Users.find_one({'email': data.email})
+        print("User : ",str(obj['_id']))
+
+        if obj is None:
+            return {'message': 'User doesn\'t exist.'}
+        if obj['password'] == data.password:
+            return {
+                'email': obj['email'],
+                'user_id': str(obj['_id']),
+                'user_name': obj['name'],
+                'mobile': obj['mobile']
+            }, 200
+        return {"message": 'Invalid credentials'}, 401
+    except Exception as e:
+        return {'message': 'Server Error' + str(e)}, 500

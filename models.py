@@ -36,16 +36,33 @@ class userDataModel(BaseModel):
             }
         }
 
+class UserModel(BaseModel):
+    name: str = Field(...)
+    email: EmailStr = Field(...)
+    password: str = Field(...)
+    mobile : str = Field(...)
 
 
     class Config:
         schema_extra = {
             "example": {
-                "chapter_name": "Introduction to Python",
-                "subject_name": "Python",
-                "user_id": "5f9f5b5b5b5b5b5b5b5b5b5b",
-                "video_url": "https://www.youtube.com/watch?v=rfscVS0vtbw",
+                "name": "John Doe",
+                "email": "hrishilamdade@gmail.com",
+                "password": "123",
+                "mobile": "1234567890"
 
+            }
+        }
+class LoginModel(BaseModel):
+    email: EmailStr = Field(...)
+    password: str = Field(...)
+
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "abc@gmail.com",
+                "password": "123",
             }
         }
 
