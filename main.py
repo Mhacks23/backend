@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MONGO_DETAILS = "mongodb+srv://admin:12345@cluster0.crod9kz.mongodb.net/?retryWrites=true&w=majority"
+MONGO_DETAILS = "" # mongo uri
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 database = client.hackathon
