@@ -115,9 +115,9 @@ async def get_recommended_videos(data: userDataModel):
         return {'message': 'Server Error : ' + str(e)}
 
 @app.get('/get_article')
-async def get_article(article: LinkModel):
+async def get_article(article: str):
     try:
-        url = article.link
+        url = article
         text = get_article_text(url)
         return {"article":text}
     

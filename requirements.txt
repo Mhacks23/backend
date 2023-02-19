@@ -38,3 +38,4 @@ pywhisper
 zipp==3.12.0
 yake
 youtube-search-python
+bs4
